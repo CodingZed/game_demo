@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#e9f7f4" />
+    <meta name="description" content="小小机长，一款为小朋友准备的轻松 3D 飞行小游戏。选一架喜欢的客机，飞向云朵，收集星星。" />
+    <title>小小机长 · Little Sky Club</title>
+  </head>
+  <body>
+    <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+      <symbol id="icon-plane" viewBox="0 0 24 24"><path d="m21 3-6.5 18-3.6-7.9L3 9.5 21 3Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="m11 13 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></symbol>
+      <symbol id="icon-star" viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.3-5.6-3-5.6 3 1.1-6.3-4.6-4.4 6.3-.9L12 2.8Z" fill="currentColor" stroke="currentColor" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="icon-sound" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M17 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.6 9a2.5 2.5 0 1 1 4.6 1.4c-.6.8-2.2 1.1-2.2 2.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.4" r="1" fill="currentColor"/></symbol>
+      <symbol id="icon-cloud" viewBox="0 0 32 24"><path d="M8 20h17a6 6 0 0 0 .6-12A8.8 8.8 0 0 0 9.1 6 7 7 0 1 0 8 20Z" fill="currentColor"/></symbol>
+      <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M20.5 5.8c-2.4-2.6-6.2-1.8-8.5 1-2.3-2.8-6.1-3.6-8.5-1-4.5 5 3.2 10.9 8.5 14.2 5.3-3.3 13-9.2 8.5-14.2Z" fill="currentColor"/></symbol>
+      <symbol id="icon-hand" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 0 1 3 0v5-1a1.5 1.5 0 0 1 3 0v1a1.5 1.5 0 0 1 3 0v2a1.5 1.5 0 0 1 3 0v3c0 4-3 6-6 6-3.8 0-5.3-2.1-7-4.5L4.5 12a1.6 1.6 0 0 1 2.4-2.1L9 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    </defs></svg>
+
+    <div id="scene" aria-label="可以旋转查看飞机的 3D 天空"></div>
+    <div class="sky-grain" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="小小机长首页"><span class="brand-mark"><svg><use href="#icon-plane"/></svg></span><span class="brand-wordmark"><strong>小小机长<span class="brand-dot">.</span></strong><small>LITTLE SKY CLUB</small></span></a>
+      <div class="header-right"><span class="sky-status"><i></i> 今天也是飞行的好天气</span><div class="header-tools"><button id="sound-toggle" class="icon-button" type="button" aria-label="打开声音" aria-pressed="false" title="声音"><svg><use href="#icon-sound"/></svg></button><button id="help-toggle" class="icon-button" type="button" aria-label="怎么玩" title="怎么玩"><svg><use href="#icon-help"/></svg></button></div></div>
+    </header>
+
+    <main id="hangar-ui">
+      <section class="welcome">
+        <div class="eyebrow"><span class="eyebrow-line"></span> 给小小梦想家的一次飞行</div>
+        <h1>今天，<br />想飞去哪儿<span>？</span></h1>
+        <p>选一架喜欢的飞机，<br />一起去云朵里兜兜风吧。</p>
+        <div class="welcome-doodle" aria-hidden="true"><svg viewBox="0 0 150 50"><path d="M2 29C32 8 85 8 113 20s17 28-1 24-2-28 31-33m-10-2 11 1-5 10"/></svg></div>
+      </section>
+
+      <aside class="aircraft-selector" aria-label="选择飞机">
+        <div class="selector-heading"><span class="section-number">01 /</span><h2>选一架你的飞机</h2></div>
+        <p class="selector-subtitle">每一架，都有自己的小本领</p>
+        <div id="aircraft-list" role="group" aria-label="客机选择"></div>
+        <section class="difficulty-selector" aria-labelledby="difficulty-heading">
+          <div class="selector-heading"><span class="section-number">02 /</span><h2 id="difficulty-heading">选择难度</h2></div>
+          <div id="difficulty-list" role="group" aria-label="飞行难度"></div>
+          <p id="difficulty-description">先从慢慢飞开始，熟练后再挑战自己。</p>
+        </section>
+      </aside>
+
+      <aside class="mission-card">
+        <div class="mission-symbol"><svg><use href="#icon-star"/></svg><span class="tiny-spark">✧</span></div>
+        <div class="mission-copy"><h2>今天的小任务</h2><p>穿过圆环，躲开热气球</p><div class="mission-bottom"><span class="mini-ring ring-mint"></span><span class="mini-ring ring-coral"></span><span class="mini-ring ring-yellow"></span><span>慢慢来，你一定可以</span></div></div>
+      </aside>
+
+      <div id="view-hint" class="view-hint"><svg><use href="#icon-hand"/></svg><span>拖动旋转 · 滚轮 / 双指缩放</span><span class="hint-dots">···</span></div>
+
+      <div id="inspection-controls" role="group" aria-label="飞机观察视角"><button id="view-front" class="view-preset" type="button" aria-label="切换到机头视角" title="从机头方向观察飞机">机头</button><button id="view-side" class="view-preset" type="button" aria-label="切换到侧面视角" title="从侧面观察飞机">侧面</button><button id="view-top" class="view-preset" type="button" aria-label="切换到俯视视角" title="从上方俯视飞机">俯视</button><button id="zoom-out" type="button" aria-label="拉远看飞机" title="拉远看飞机"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><button id="zoom-reset" type="button" aria-label="复位视角" title="复位视角"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9a7.5 7.5 0 1 1 .2 6M5 4v5h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>复位</span></button><button id="zoom-in" type="button" aria-label="拉近看细节" title="拉近看细节"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12M12 6v12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+
+      <section class="takeoff-panel" aria-label="开始飞行">
+        <div class="selected-aircraft"><span class="ready-label"><i></i> 你的飞机已就位</span><h2 id="selected-name">波音 737</h2><p id="selected-description">轻巧又灵活，是天空中的快乐小伙伴</p><p id="aircraft-details" class="aircraft-details"></p></div>
+        <div class="takeoff-action"><button id="start-button" type="button"><svg class="takeoff-plane"><use href="#icon-plane"/></svg><span>准备好啦，起飞！</span><svg class="takeoff-arrow"><use href="#icon-arrow"/></svg></button><p><span class="keyboard-mini">↑ ↓ ← →</span> 方向键或屏幕按钮，轻松飞行</p></div>
+      </section>
+
+      <footer class="hangar-footer"><span><svg><use href="#icon-heart"/></svg> 每一次尝试，都是新的进步</span><span class="footer-coordinate">LET YOUR DREAMS TAKE FLIGHT <svg><use href="#icon-plane"/></svg></span></footer>
+    </main>
+
+    <main id="flight-ui" hidden>
+      <div class="flight-topbar"><div class="flight-info"><span class="flight-label">小小机长 · 正在飞行</span><strong id="flight-name">波音 737</strong><span id="flight-difficulty" class="flight-difficulty">轻松飞</span><span id="route-status" class="route-status" role="status" aria-live="polite">自由练习</span></div><div class="star-counter"><svg><use href="#icon-star"/></svg><span id="stars-count">0</span><span class="star-unit">颗星星</span></div><button id="home-button" type="button"><svg><use href="#icon-plane"/></svg> 换一架飞机</button></div>
+      <div id="celebration" class="celebration" role="status" aria-live="polite"></div>
+      <div class="flight-bottom"><div id="flight-controls" aria-label="飞行方向"><button type="button" data-direction="up" aria-label="往上飞"><svg><use href="#icon-arrow"/></svg></button><button type="button" data-direction="left" aria-label="往左飞"><svg><use href="#icon-arrow"/></svg></button><button type="button" data-direction="down" aria-label="往下飞"><svg><use href="#icon-arrow"/></svg></button><button type="button" data-direction="right" aria-label="往右飞"><svg><use href="#icon-arrow"/></svg></button></div><p id="flight-hint">穿过圆环，记得躲开热气球！<span>方向键 / WASD 移动 · 空格加速</span></p><button id="boost-button" type="button"><svg><use href="#icon-plane"/></svg><span>加速飞</span></button></div>
+      <section id="crash-panel" hidden role="status" aria-live="polite" aria-labelledby="crash-title" tabindex="-1">
+        <div class="crash-card"><div class="crash-symbol" aria-hidden="true"><svg><use href="#icon-cloud"/></svg><svg><use href="#icon-plane"/></svg></div><span class="crash-eyebrow">TRY AGAIN, LITTLE PILOT</span><h2 id="crash-title">这次碰到了，<br />再试一次！</h2><p id="crash-reason">下次记得留意前方，也别飞得太低。</p><div class="crash-scoreboard"><svg><use href="#icon-star"/></svg><span>这次收集了</span><strong id="crash-score">0</strong><span>颗星星</span></div><button id="retry-button" type="button"><svg><use href="#icon-plane"/></svg>再飞一次<svg><use href="#icon-arrow"/></svg></button><button id="crash-home-button" type="button">换飞机 / 难度</button><p class="crash-encouragement">每次练习，都会飞得更好一点。</p></div>
+      </section>
+    </main>
+
+    <dialog id="help-dialog" aria-labelledby="help-title"><button id="close-help" class="dialog-close" type="button" aria-label="关闭玩法说明">×</button><div class="help-cloud"><svg><use href="#icon-cloud"/></svg><svg><use href="#icon-plane"/></svg></div><div class="eyebrow">HELLO, LITTLE PILOT!</div><h2 id="help-title">天空，交给你啦</h2><p class="help-intro">先选难度，再试着自己掌握方向。</p><p class="inspection-help">选飞机时，可以切换机头、侧面和俯视，看看它的细节。</p><ol class="help-steps"><li><span>1</span><div><strong>选飞机，也选一个小挑战</strong><p class="difficulty-guide"><span><b>简单</b> 慢慢飞，热气球少，圆环也更容易穿过。</span><span><b>普通</b> 飞得更快，热气球更密集。</span><span><b>困难</b> 快速飞行、移动障碍；连续漏过 3 个圆环，就要重新挑战。</span></p></div></li><li><span>2</span><div><strong>自己掌握方向</strong><p>用方向键、WASD 或屏幕箭头移动。松开后直线飞行；按空格或「加速飞」提速。</p></div></li><li><span>3</span><div><strong>穿圆环，躲开热气球</strong><p>圆环和云朵可以穿过；碰到热气球或地面会卡通坠机，再来一次就好。</p></div></li></ol><section class="volume-settings" aria-labelledby="volume-label"><div class="volume-heading"><label id="volume-label" for="volume-control">飞行音量</label><output id="volume-value" for="volume-control">35%</output></div><input id="volume-control" type="range" min="0" max="100" value="35" aria-describedby="volume-description" /><p id="volume-description">风声与引擎声会随加速变化；右上角可静音。</p></section><div class="help-reassurance"><svg><use href="#icon-heart"/></svg> 每一次尝试，都是新的进步。</div></dialog>
+    <div id="loading" class="loading-screen"><span class="loading-plane"><svg><use href="#icon-plane"/></svg></span><p>正在把云朵铺好…</p></div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
