@@ -12,6 +12,14 @@
 
 在线版的离线文件下载地址：https://codingzed.github.io/game_demo/little-sky-club.html 。另存为 `.html` 后可离线使用。
 
+### 手机与慢网络
+
+首次联网打开后，等选机页显示「可离线玩」，游戏所需文件就已保存在当前浏览器中。之后用同一浏览器打开同一网址，可直接从本地缓存启动；网络断开时也能玩。浏览器清理网站数据后需要重新联网保存。未支持离线保存的浏览器仍可正常在线玩。
+
+有新版本时，选机页会显示「更新游戏」。点击后才会刷新，不会打断正在进行的飞行。首次加载很慢或文件加载失败时，页面会显示说明和「重新打开」按钮。
+
+网站把首屏样式放进 HTML，并只打包飞机文字实际用到的字形，保留模型的全部几何细节。缓存改善再次打开；首次连接 GitHub Pages 的速度仍取决于当地网络线路。
+
 ## 直接玩（不需要安装）
 
 下载单文件版 `little-sky-club.html`，用 Chrome 或 Edge 打开即可。页面包含全部游戏代码、画面和声音，可以离线玩，无需启动服务器。若下载界面先显示源码，请使用「另存为」保存为 `.html` 文件，再用浏览器打开。
@@ -49,11 +57,14 @@ npm run dev
 npm test          # 飞行规则与模型测试
 npm run test:e2e  # 桌面/触屏浏览器流程，需要 Chromium
 npm run build    # 生成 dist/ 静态站点
+npm run test:offline # 构建后验证离线加载、缓存隔离和安全更新
 npm run preview  # 本地检查构建产物
 ```
 
 浏览器测试优先使用 `/usr/bin/chromium`。其他机器先运行 `npx playwright install chromium`。截图写入 `/tmp/little-sky-*.png`。
 
 云环境中 npm 默认缓存不可写时使用 `npm ci --cache /workspace/.npm-cache`。在已有 `/workspace/game_demo` 仓库内工作即可，无需创建额外的 Git worktree。发布静态网站时部署 `dist/`；启动的开发服务器进程不会随环境快照保存。
+
+生产构建会生成带完整性校验的离线缓存清单。修改 `dist/` 中的页面或脚本后需重新运行构建，避免新旧文件混用。开发服务器与单文件离线版不会注册此缓存。
 
 Three.js 与内置 Helvetiker 字体的许可和署名保存在 `public/THIRD_PARTY_NOTICES.txt`，构建时会一起发布。

@@ -31,6 +31,10 @@ jobs:
         run: |
           npm run build
           npm run build:standalone
+      - name: Install browser for offline verification
+        run: npx playwright install --with-deps chromium
+      - name: Verify offline loading and safe updates
+        run: npm run test:offline
       - name: Upload website
         uses: actions/upload-pages-artifact@v3
         with:

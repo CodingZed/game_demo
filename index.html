@@ -6,6 +6,9 @@
     <meta name="theme-color" content="#e9f7f4" />
     <meta name="description" content="小小机长，一款为小朋友准备的轻松 3D 飞行小游戏。选一架喜欢的客机，飞向云朵，收集星星。" />
     <title>小小机长 · Little Sky Club</title>
+    <style id="sky-loading-critical">
+      .icon-library{position:absolute;width:0;height:0;overflow:hidden}#loading{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:#eaf5ec;color:#6c8f7a;font-family:"PingFang SC","Microsoft YaHei",sans-serif;text-align:center;padding:24px;box-sizing:border-box;pointer-events:auto}#loading[hidden],#loading [hidden]{display:none!important}#loading .loading-plane{display:grid;place-items:center;width:70px;height:70px;border-radius:25px;background:#437d69;color:#fffdf1}#loading .loading-plane svg{width:40px;height:40px}#loading-message{font-size:13px;letter-spacing:2px;margin:0}#loading-note{max-width:300px;font-size:11px;line-height:1.8;letter-spacing:.4px;margin:0;color:#87a08b}#loading-retry{border:1px solid #d3e4ce;border-radius:13px;background:#fffef5;color:#527a5c;padding:12px 24px;font:inherit;font-size:12px;cursor:pointer}#loading-retry:focus-visible{outline:3px solid #e4b25d;outline-offset:4px}
+    </style>
   </head>
   <body>
     <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -60,7 +63,7 @@
         <div class="takeoff-action"><button id="start-button" type="button"><svg class="takeoff-plane"><use href="#icon-plane"/></svg><span>准备好啦，起飞！</span><svg class="takeoff-arrow"><use href="#icon-arrow"/></svg></button><p><span class="keyboard-mini">↑ ↓ ← →</span> 方向键或屏幕按钮，轻松飞行</p></div>
       </section>
 
-      <footer class="hangar-footer"><span><svg><use href="#icon-heart"/></svg> 每一次尝试，都是新的进步</span><span class="footer-coordinate">LET YOUR DREAMS TAKE FLIGHT <svg><use href="#icon-plane"/></svg></span></footer>
+      <footer class="hangar-footer"><span><svg><use href="#icon-heart"/></svg> 每一次尝试，都是新的进步</span><span class="offline-tools"><span id="offline-status" role="status" aria-live="polite" hidden>正在保存…</span><button id="update-game" type="button" hidden>更新游戏</button></span><span class="footer-coordinate">LET YOUR DREAMS TAKE FLIGHT <svg><use href="#icon-plane"/></svg></span></footer>
     </main>
 
     <main id="flight-ui" hidden>
@@ -73,8 +76,95 @@
     </main>
 
     <dialog id="help-dialog" aria-labelledby="help-title"><button id="close-help" class="dialog-close" type="button" aria-label="关闭玩法说明">×</button><div class="help-cloud"><svg><use href="#icon-cloud"/></svg><svg><use href="#icon-plane"/></svg></div><div class="eyebrow">HELLO, LITTLE PILOT!</div><h2 id="help-title">天空，交给你啦</h2><p class="help-intro">先选难度，再试着自己掌握方向。</p><p class="inspection-help">选飞机时，可以切换机头、侧面和俯视，看看它的细节。</p><ol class="help-steps"><li><span>1</span><div><strong>选飞机，也选一个小挑战</strong><p class="difficulty-guide"><span><b>简单</b> 慢慢飞，热气球少，圆环也更容易穿过。</span><span><b>普通</b> 飞得更快，热气球更密集。</span><span><b>困难</b> 快速飞行、移动障碍；连续漏过 3 个圆环，就要重新挑战。</span></p></div></li><li><span>2</span><div><strong>自己掌握方向</strong><p>用方向键、WASD 或屏幕箭头移动。松开后直线飞行；按空格或「加速飞」提速。</p></div></li><li><span>3</span><div><strong>穿圆环，躲开热气球</strong><p>圆环和云朵可以穿过；碰到热气球或地面会卡通坠机，再来一次就好。</p></div></li></ol><section class="volume-settings" aria-labelledby="volume-label"><div class="volume-heading"><label id="volume-label" for="volume-control">飞行音量</label><output id="volume-value" for="volume-control">35%</output></div><input id="volume-control" type="range" min="0" max="100" value="35" aria-describedby="volume-description" /><p id="volume-description">风声与引擎声会随加速变化；右上角可静音。</p></section><div class="help-reassurance"><svg><use href="#icon-heart"/></svg> 每一次尝试，都是新的进步。</div></dialog>
-    <div id="loading" class="loading-screen"><span class="loading-plane"><svg><use href="#icon-plane"/></svg></span><p>正在把云朵铺好…</p></div>
+    <div id="loading" class="loading-screen" role="status" aria-live="polite" aria-busy="true"><span class="loading-plane" aria-hidden="true"><svg><use href="#icon-plane"/></svg></span><p id="loading-message">正在把云朵铺好…</p><p id="loading-note" hidden></p><button id="loading-retry" type="button" hidden>重新打开</button></div>
     <div id="toast" role="status" aria-live="polite"></div>
+    <script>
+      (() => {
+        let finished = false;
+        let failed = false;
+        let retryButton;
+        const loader = () => document.getElementById('loading');
+        const isLoading = () => !finished && loader() && !loader().hidden;
+        const reload = () => window.location.reload();
+        function feedback() {
+          const root = loader();
+          if (!root) return {};
+          let note = document.getElementById('loading-note');
+          if (!note) {
+            note = document.createElement('p');
+            note.id = 'loading-note';
+            note.hidden = true;
+            root.appendChild(note);
+          }
+          let button = document.getElementById('loading-retry');
+          if (!button) {
+            button = document.createElement('button');
+            button.id = 'loading-retry';
+            button.type = 'button';
+            button.textContent = '重新打开';
+            button.hidden = true;
+            root.appendChild(button);
+          }
+          if (retryButton !== button) {
+            retryButton?.removeEventListener('click', reload);
+            retryButton = button;
+            retryButton.addEventListener('click', reload);
+          }
+          return { note, button };
+        }
+        function showFailure() {
+          if (!isLoading() || failed) return;
+          failed = true;
+          clearTimeout(slowTimer);
+          const message = document.getElementById('loading-message');
+          if (message) message.textContent = '这次没能打开天空';
+          const { note, button } = feedback();
+          // Preserve any specific browser support explanation supplied by the game.
+          if (note) {
+            note.textContent = message ? '请检查网络连接，再试一次。' : '你可以重新打开，或按照上方提示换一个浏览器。';
+            note.hidden = false;
+          }
+          if (button) button.hidden = false;
+          loader()?.setAttribute('aria-busy', 'false');
+        }
+        function onError(event) {
+          if (event.target === window || event.target?.tagName === 'SCRIPT') showFailure();
+        }
+        const slowTimer = setTimeout(() => {
+          if (!isLoading() || failed) return;
+          const { note, button } = feedback();
+          if (note) {
+            note.textContent = '加载比平时慢… 可以再等一会儿，或重新打开。';
+            note.hidden = false;
+          }
+          if (button) button.hidden = false;
+        }, 10000);
+        window.addEventListener('error', onError, true);
+        window.addEventListener('unhandledrejection', showFailure);
+        feedback();
+        window.__skyBoot = {
+          setPhase(text) {
+            if (!isLoading() || failed) return;
+            const message = document.getElementById('loading-message');
+            if (message) message.textContent = text;
+          },
+          finish() {
+            if (finished) return;
+            finished = true;
+            clearTimeout(slowTimer);
+            window.removeEventListener('error', onError, true);
+            window.removeEventListener('unhandledrejection', showFailure);
+            retryButton?.removeEventListener('click', reload);
+            const root = loader();
+            if (root) {
+              root.setAttribute('aria-busy', 'false');
+              root.hidden = true;
+            }
+            try { window.performance?.mark?.('sky-ready'); } catch {}
+          },
+        };
+      })();
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

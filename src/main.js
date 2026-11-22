@@ -5,8 +5,10 @@ import { createAircraftCollider, sweepAircraftSphere, sweepAircraftBox } from '.
 import { FlightAudio } from './audio.js';
 import { AIRCRAFT, createAircraft } from './aircraft.js';
 import { mergeStaticMeshes } from './optimize.js';
+import { initOfflineCache } from './offline-cache.js';
 import { moveTarget, insideRing, ringPosition, DIFFICULTIES, obstaclePosition, GROUND_Y, clamp, advanceRingProgress } from './flight.js';
 
+window.__skyBoot?.setPhase('正在准备飞机与天空…');
 const $ = (id) => document.getElementById(id);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#bce9eb');
@@ -510,5 +512,6 @@ export function getGameState(){
 }
 renderer.domElement.getGameState=getGameState;
 selectAircraft(selected);updateSound();renderDifficulty();setZoom(1);
-$('loading').hidden=true;
 frame();
+if(window.__skyBoot)window.__skyBoot.finish();else $('loading').hidden=true;
+initOfflineCache();

@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 
 export default defineConfig({
   testDir: './e2e',
+  testMatch: 'game.spec.js',
   timeout: 120000,
   workers: 1,
   use: {

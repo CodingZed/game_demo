@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import fontData from 'three/examples/fonts/helvetiker_regular.typeface.json' with { type: 'json' };
+import fontData from './fonts/helvetiker-aircraft.json' with { type: 'json' };
 
 // The bundled font includes its original MAGENTA license and attribution.
 const aircraftFont = new FontLoader().parse(fontData);
