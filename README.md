@@ -8,6 +8,8 @@
 
 网站由 GitHub Pages 托管。推送到 `main` 后，GitHub Actions 会运行模型和碰撞测试、构建网页并自动发布；可在仓库的 Actions 页面查看发布进度。也可以手动运行 `Publish game to GitHub Pages` 工作流。
 
+首次启用时，在仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**，再运行发布工作流即可。之后更新 `main` 会自动部署。
+
 在线版的离线文件下载地址：https://codingzed.github.io/game_demo/little-sky-club.html 。另存为 `.html` 后可离线使用。
 
 ## 直接玩（不需要安装）
